@@ -1,0 +1,77 @@
+#ifndef OS2_INCLUDED
+   #include <os2.h>
+#endif
+
+
+#include <util.h>
+
+STRINGTABLE PRELOAD
+{
+  UTIL_IDS_OK            "Ok"
+  UTIL_IDS_CANCEL        "Cancel"
+  UTIL_IDS_ABORT         "Abort"
+  UTIL_IDS_RETRY         "Retry"
+  UTIL_IDS_IGNORE        "Ignore"
+  UTIL_IDS_YES           "Yes"
+  UTIL_IDS_NO            "No"
+}
+
+
+#include "rdrc.h"
+
+ICON IDRES_ICON rdesktop.ico
+
+rcinclude rdesktop.dlg
+
+BITMAP IDRES_PROGRESS_BAR_BMP progress_bar.bmp
+
+STRINGTABLE PRELOAD
+{
+  IDS_PAGE_NO,             "Page 1 of 2"
+  IDS_SERVER,              "~Server"
+  IDS_PROTOCOL,            "~Protocol"
+  IDS_REDIRECTION,         "~Redirection"
+  IDS_BPP_8_PRIVATE_COLORS "8 BPP (local palette)"
+  IDS_BPP_8                "8 BPP"
+  IDS_BPP_15               "15 BPP"
+  IDS_BPP_16               "16 BPP"
+  IDS_BPP_32               "32 BPP"
+  IDS_ENC_FULL             "Full"
+  IDS_ENC_NONE             "None"
+  IDS_ENC_LOGON            "Logon only"
+  IDS_NAME                 "Name"
+  IDS_LOCAL_PATH           "Local path"
+  IDS_YES                  "Yes"
+  IDS_NO                   "No"
+  IDS_REMOTE               "Remote"
+  IDS_LOCAL                "Local"
+  IDS_PORT_NONE            "none"
+  IDS_CONWIN_TITLE         "Console: %1"
+  IDS_PID                  "PID"
+  IDS_TIME                 "Time"
+  IDS_MESSAGE              "Message"
+  IDS_PROGRESS_TITLE       "Connection: %1"
+}
+
+MESSAGETABLE
+{
+  IDM_PATH_NOT_EXIST       "The specified local path does not exist.\n"
+                           "Use it anyway?"
+  IDM_DUPLICATE_NAME       "The specified name already in use."
+  IDM_RDESKTOP_RUN         "Run rdesktop. Host: %1, User: %2"
+  IDM_RDESKTOP_EXIT        "Exit rdesktop"
+  IDM_INVALID_HOSTNAME     "Invalid host name: %1"
+  IDM_START_FAILED         "Can not run rdesktop.exe"
+}
+
+MENU IDMNU_RDESKTOP LOADONCALL MOVEABLE DISCARDABLE
+{
+   MENUITEM "C~opy run command", IDMI_COPYRUNCMD
+   MENUITEM "Co~nsole...", IDMI_CONSOLE
+}
+
+MENU IDMENU_CONSOLE
+{
+  MENUITEM "~Clear",       IDMI_CON_CLEAR, MIS_TEXT
+  MENUITEM "C~opy message",IDMI_CON_COPY,  MIS_TEXT
+}

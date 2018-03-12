@@ -1,0 +1,31 @@
+<WARPIN>
+  <HEAD>
+    <PCK INDEX=1
+         PACKAGEID="Digi\rdesktop\Rdesktop\<!-- BL:..\..\rdesktop.exe -->"
+         TITLE="Rdesktop"
+         TARGET="$(WARPIN_DEFAULTAPPSPATH)\rdesktop"
+         BASE
+         SELECT
+         >Rdesktop</PCK>
+
+    <PCK INDEX=2
+         PACKAGEID="Digi\rdesktop\Rdesktop WPS Class\<!-- BL:..\WPS\rdesktop.dll -->"
+         TITLE="Work Place Shell template"
+         TARGET="$(WARPIN_DEFAULTAPPSPATH)\rdesktop"
+         REQUIRES=1
+         SELECT | FIXED
+         REGISTERCLASS="Rdesktop|$(1)\rdesktop.dll"
+         >Work Place Shell template</PCK>
+  </HEAD>
+  <BODYe>
+
+    <PAGE INDEX=1 TYPE=CONTAINER>
+      <NEXTBUTTON TARGET=0>I~nstall</NEXTBUTTON>
+      <TEXT>
+        Installing Rdesktop
+        Please select the packages which are to be installed.
+      </TEXT>
+    </PAGE>
+
+  </BODY>
+</WARPIN>

@@ -1,0 +1,288 @@
+#ifndef rdesktop_idl
+#define rdesktop_idl
+
+#include <wpabs.idl>
+#include <somcls.idl>
+
+interface M_Rdesktop;
+
+interface Rdesktop : WPAbstract
+{
+   // Values for ulSizeMode.
+   const ULONG    SIZEMODE_ABSOLUTE      = 0;
+   const ULONG    SIZEMODE_PROPORTIONAL  = 1;
+   const ULONG    SIZEMODE_FULLSCREEN    = 2;
+
+   // Minimum for proportional remote desktop size [%].
+   const ULONG    PROPSIZE_MIN           = 20;
+
+   // Flags: ulSwitches.
+   const ULONG    SWFL_RDP5             = 0x0001;
+   const ULONG    SWFL_COMPRESSION      = 0x0002;
+   const ULONG    SWFL_PRES_BMP_CACHING = 0x0004;
+   const ULONG    SWFL_FORCE_BMP_UPD    = 0x0008;
+   const ULONG    SWFL_NUMLOCK_SYNC     = 0x0010;
+   const ULONG    SWFL_NO_MOTION_EVENTS = 0x0020;
+   const ULONG    SWFL_KEEP_WIN_KEYS    = 0x0040;
+
+   // Flags: ulRDP5Performance
+   const ULONG    PERFFL_NO_WALLPAPER      = 0x01;
+   const ULONG    PERFFL_NO_FULLWINDOWDRAG = 0x02;
+   const ULONG    PERFFL_NO_MENUANIMATIONS = 0x04;
+   const ULONG    PERFFL_NO_THEMING        = 0x08;
+   const ULONG    PERFFL_NO_CURSOR_SHADOW  = 0x20;
+   const ULONG    PERFFL_NO_CURSORSETTINGS = 0x40;
+   const ULONG    PERFFL_ANTIALIASING      = 0x80;
+
+   // Values: ulEncryption
+   const ULONG    ENC_FULL  = 0;
+   const ULONG    ENC_NONE  = 1;
+   const ULONG    ENC_LOGON = 2;
+
+   // Values: CONRECORD.ulLevel
+   const ULONG    CONREC_SHELL    = 0;
+   const ULONG    CONREC_INFO     = 1;
+   const ULONG    CONREC_WARNING  = 2;
+   const ULONG    CONREC_ERROR    = 3;
+
+   // Default values on page "Server".
+   const BOOL     DEF_PROMPT   = TRUE;
+   const ULONG    DEF_SIZEMODE = SIZEMODE_PROPORTIONAL;
+   const LONG     DEF_WIDTH    = 800;
+   const LONG     DEF_HEIGHT   = 600;
+   const ULONG    DEF_PROPSIZE = 80;
+   const ULONG    DEF_DEPTH    = 4;
+
+   // Default values on page "Protocol".
+   const ULONG    DEF_ENC      = ENC_FULL;
+   const ULONG    DEF_SWITCHES = (SWFL_RDP5 | SWFL_COMPRESSION | SWFL_NUMLOCK_SYNC);
+   const ULONG    DEF_RDP5PERF = (PERFFL_NO_WALLPAPER | PERFFL_NO_FULLWINDOWDRAG
+                                  | PERFFL_NO_MENUANIMATIONS | PERFFL_NO_CURSOR_SHADOW);
+
+   // Window position "not changed" value (for lWinPosX and lWinPosY)
+   const LONG     WINPOS_NOT_CHANGED = 0x80000000;
+
+   struct DISKREDIR
+   {
+     CHAR  acName[8];
+     PSZ   pszPath;
+   };
+   typedef DISKREDIR *PDISKREDIR;
+
+   VOID rdInsertSettingsPages(in HWND hwndDlg);
+   BOOL rdDiskRedirAdd(in PSZ pszName, in PSZ pszLocalPath);
+   VOID rdDiskRedirDelete(in PSZ pszName);
+   VOID rdDiskRedirDeleteAll();
+
+   BOOL rdRestoreStringNew(in ULONG ulKey, inout PSZ ppszValue);
+   // Restores an ASCIIZ instance data string, allocates memory for the new
+   // string, de-allocates old memory block if it is not a NULL. If KEY not
+   // found string will be not changed and FALSE will be returned.
+
+   BOOL rdSetupStringNew(in PSZ pszSetupString, in PSZ pszKey, inout PSZ ppszValue);
+   // Called by wpSetup to search KEY in the setup string and return string
+   // value for this KEY. if KEY found: allocates memory for the new string,
+   // de-allocates old memory block (if it is not a NULL) and returns TRUE.
+
+   BOOL rdSetupReadULong(in PSZ pszSetupString, in PSZ pszKey, inout ULONG pulValue);
+   // Called by wpSetup to search KEY in the setup string and return ULONG
+   // value for this KEY. If KEY not found: value will not be changed, result
+   // code is FALSE.
+
+   BOOL rdSetupReadBool(in PSZ pszSetupString, in PSZ pszKey, inout ULONG pfValue);
+   // Called by wpSetup to search KEY in the setup string and return BOOL
+   // value for this KEY (TRUE - YES/Y/ON/1, FALSE - NO/N/OFF/0). If KEY not
+   // found or invalid value specified for the KEY: *pfValue will not be
+   // changed, result code is FALSE.
+
+   BOOL rdSetupReadVal(in PSZ pszSetupString, in PSZ pszKey, in PSZ pszValList,
+                       inout ULONG pulValue);
+   // Called by wpSetup to search KEY in the setup string and return a sequence
+   // number value in the list (items separated by ',', number of first item is
+   // 0). If KEY not found or specified value for the KEY not listed in
+   // pszValList: *pfValue will not be changed, result code is FALSE.
+
+   VOID rdGetHelpFile(in CHAR *pcBuf);
+   // Fills the buffer pcBuf with help file full name. The buffer size must
+   // be minimum of CCHMAXPATH bytes.
+
+   #ifdef __SOMIDL__
+   implementation
+   {
+      releaseorder: rdInsertSettingsPages, rdDiskRedirAdd, rdDiskRedirDelete,
+                    rdDiskRedirDeleteAll,
+                    rdRestoreStringNew, rdSetupStringNew, rdSetupReadULong,
+                    rdSetupReadBool, rdSetupReadVal, rdGetHelpFile;
+
+      //  Class Modifiers
+      functionprefix = RD_;
+      externalprefix = RD_;
+      local;
+      majorversion   = 1;
+      minorversion   = 2;
+      filestem       = rdesktop;
+      metaclass      = M_Rdesktop;
+      callstyle      = oidl;
+      dllname        = "rdesktop.dll";
+
+      // object instance data
+      PSZ            pszHost;
+      PSZ            pszUser;
+      PSZ            pszDomain;
+      PSZ            pszPassword;
+      BOOL           fLoginPrompt;
+      ULONG          ulSizeMode;
+      // SIZEMODE_xxxxx: 0: Absolute, 1: Proportional, 2: fullscreen
+      LONG           lWidth;
+      LONG           lHeight;
+      ULONG          ulProportionalSize;
+      ULONG          ulColorDepth;
+      // 0: 8 bpp, 1: 15 bpp, 2: 16 bpp, 3: 24 bpp, 4: 32 bpp.
+      PSZ            pszClientHost;
+      PSZ            pszLocalCP;
+      ULONG          ulSwitches;
+      // SWFL_RDP5,             0x0001: (-5) use RDP version 5 instead 4 (-4)
+      // SWFL_COMPRESSION,      0x0002: (-z) enable rdp compression
+      // SWFL_PRES_BMP_CACHING, 0x0004: (-P) use persistent bitmap caching
+      // SWFL_FORCE_BMP_UPD,    0x0008: (-b) force bitmap updates
+      // SWFL_NUMLOCK_SYNC,     0x0010: (-N) enable numlock syncronization
+      // SWFL_NO_MOTION_EVENTS, 0x0020: (-m) do not send motion events
+      // SWFL_KEEP_WIN_KEYS,    0x0040: (-K) keep window manager key bindings
+      ULONG          ulRDP5Perf;
+      // PERFFL_NO_WALLPAPER,      0x01: RDP5_NO_WALLPAPER
+      // PERFFL_NO_FULLWINDOWDRAG, 0x02: RDP5_NO_FULLWINDOWDRAG
+      // PERFFL_NO_MENUANIMATIONS, 0x04: RDP5_NO_MENUANIMATIONS
+      // PERFFL_NO_THEMING,        0x08: RDP5_NO_THEMING
+      // PERFFL_NO_CURSOR_SHADOW,  0x20: RDP5_NO_CURSOR_SHADOW
+      // PERFFL_NO_CURSORSETTINGS, 0x40: RDP5_NO_CURSORSETTINGS
+      ULONG          ulEncryption;
+      // ENC_FULL 0, ENC_LOGON 1, ENC_NONE 2
+      PSZ            pszDiskClient;
+      sequence<DISKREDIR>   seqDiskRedir;
+      ULONG          ulClipboard;
+      // 0: primary, 1: passive, 2: off
+      ULONG          ulSound;
+      // 0: local, 1: remote, 2: off
+      ULONG          cSerDevRedir;
+      ULONG          aulSerDevRedir[16];
+      // Use SDR2Remote(), SDR2Local(), Ports2SDR() for aulSerDevRedir[i].
+
+      PVOID          pStartData;
+      // Process id of all instances of rdesktop.exe
+
+      HWND           hwndConsole;
+      // Console dialog window handle.
+      HWND           hwndProgress;
+      // Progress dialog window handle.
+      LONG           lWinPosX;
+      LONG           lWinPosY;
+
+      passthru C_ih =
+      "#define INCL_PM"
+      "#define INCL_DOS"
+      "#define INCL_ERRORS"
+      "#include <os2.h>"
+      "#include <stdlib.h>"
+      "#include <string.h>"
+      "#include <stdio.h>"
+      "#include <util.h>"
+      "#include <nbpage.h>"
+      "#include <debug.h>"
+      "";
+
+      passthru C_h_after =  ""
+      "#include <start.h>"
+      "#include <rdrc.h>"
+      "#include <conwin.h>"
+      "#include <progress.h>"
+      ""
+      "#define OPEN_RDESKTOP           (OPEN_USER+1)"
+      ""
+      "//  Keys for save-restore methods"
+      ""
+      "#define SK_HOST                 1"
+      "#define SK_USER                 2"
+      "#define SK_DOMAIN               3"
+      "#define SK_PASSWORD             4"
+      "#define SK_LOGINPROMPT          5"
+      "#define SK_SIZEMODE             6"
+      "#define SK_WIDTH                7"
+      "#define SK_HEIGHT               8"
+      "#define SK_PROPSIZE             9"
+      "#define SK_DEPTH               10"
+      "#define SK_CLIENTHOST          11"
+      "#define SK_LOCALCP             12"
+      "#define SK_SWITCHES            13"
+      "#define SK_RDP5PREF            14"
+      "#define SK_ENCRYPTION          15"
+      "#define SK_DISKCLIENT          16"
+      "#define SK_DISKREDIR_COUNT     17"
+      "#define SK_DISKREDIR_NAME    1000"
+      "#define SK_DISKREDIR_PATH    2000"
+      "#define SK_CLIPBOARD           20"
+      "#define SK_SOUND               21"
+      "#define SK_SERDEVREDIR_COUNT   22"
+      "#define SK_SERDEVREDIR         23"
+      "#define SK_WINPOS_X            50"
+      "#define SK_WINPOS_Y            51"
+      ""
+      "// Macros for records in aulSerDevRedir[]."
+      "#define SDR2Remote(__ul) (__ul & 0x00FF)"
+      "#define SDR2Local(__ul) ((__ul >> 8) & 0x00FF)"
+      "#define Ports2SDR(__remote,__local) ( (__local << 8) | __remote)"
+      "";
+
+      // Method Modifiers
+      wpInitData:                      override;
+      wpUnInitData:                    override;
+      wpSaveState:                     override;
+      wpRestoreState:                  override;
+      wpAddSettingsPages:              override;
+      wpAddObjectWindowPage:           override;
+      wpSetup:                         override;
+      wpCreateFromTemplate:            override;
+      wpCopiedFromTemplate:            override;
+      wpOpen:                          override;
+      wpSwitchTo:                      override;
+      // Our wpOpen() does not returns real HWND of rdesktop's window. We have
+      // only pid. We need overwrite wpSwitchTo() to support our switching for
+      // OPEN_RDESKTOP view.
+      wpModifyPopupMenu:               override;
+      wpMenuItemSelected:              override;
+      wpMenuItemHelpSelected:          override;
+   };
+   #endif /* __SOMIDL__ */
+};
+
+interface M_Rdesktop : M_WPAbstract
+{
+   #ifdef __SOMIDL__
+   implementation
+   {
+      // Class Modifiers
+      functionprefix = MRD_;
+      externalprefix = MRD_;
+      local;
+      majorversion   = 1;
+      minorversion   = 2;
+      filestem       = rdesktop;
+      callstyle      = oidl;
+      dllname        = "rdesktop.dll";
+
+      // metaclass data
+      PSZ        pszMleText;
+
+      // Method Modifiers
+      wpclsInitData:                   override;
+      wpclsUnInitData:                 override;
+      wpclsQueryIconData:              override;
+      wpclsQueryTitle:                 override;
+      wpclsQueryStyle:                 override;
+      wpclsCreateDefaultTemplates:     override;
+      wpclsQueryDefaultView:           override;
+
+   };
+   #endif /* __SOMIDL__ */
+};
+
+#endif  /* rdesktop_idl */

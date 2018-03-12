@@ -1,0 +1,12 @@
+#ifndef NBPAGE_H
+#define NBPAGE_H
+
+#define WM_USER_UPDATECONTROLS (WM_USER + 0x1000)
+
+MRESULT EXPENTRY nbPageServer(HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2);
+MRESULT EXPENTRY nbPageProtocol1(HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2);
+MRESULT EXPENTRY nbPageProtocol2(HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2);
+MRESULT EXPENTRY nbPageRedirection1(HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2);
+MRESULT EXPENTRY nbPageRedirection2(HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2);
+
+#endif // NBPAGE_H

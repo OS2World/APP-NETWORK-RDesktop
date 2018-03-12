@@ -1,0 +1,154 @@
+rdesktop for OS/2 & eComStation
+
+This is the rdesktop v1.8.3 port for OS/2 and eComStation.
+RDESKTOP is a client for Remote Desktop Protocol (RDP), used in a number of
+Microsoft products including Windows NT Terminal Server, Windows 2000 Server,
+Windows XP and Windows 2003 Server.
+
+Some features supported by this port:
+  - Fullscreen mode.
+  - Sound output (DART).
+  - SeamlessRDP mode.
+  - Clipboard redirection (text and images).
+  - Directories redirection.
+  - Serial devices redirection.
+
+Main website of rdesktop
+  http://www.rdesktop.org/
+
+
+Installation.
+-------------
+
+1. Install 'libc066.dll', other 'libc*.dll', 'gcc1.dll', 'crypto10.dll' and
+   'ssl10.dll' files into one of the directories on your "LIBPATH" (e.g.
+   'x:\os2\dll'). You can download archives with these files from:
+
+       http://rpm.netlabs.org/release/00/zip/libc-0_6_6-26_oc00.zip
+       http://rpm.netlabs.org/release/00/zip/gcc-4_9_2_1-3_oc00.zip
+       http://rpm.netlabs.org/release/00/zip/openssl-1_0_0r-1_oc00.zip
+
+   If you use RPM/YUM, just run this command:
+
+       yum install libc libgcc1 openssl
+
+2. rdesktop for OS/2 uses 'kiconv.dll'/'iconv2.dll'/'iconv.dll' or OS/2 Uni*()
+   API (the first that will be found is used). You can download 'iconv2.dll'
+   from Hobbes:
+
+       http://hobbes.nmsu.edu/h-search.php?button=Search&key=libiconv-1.14
+
+3. Install Rdesktop from WPI installation packet.
+
+
+Starting rdesktop.
+------------------
+
+Simplest way to run Rdesktop.
+
+Drag a template Rdesktop out of the templates folder to the desktop or other
+folder and fill minimum required properties: host, user name and domain.
+
+Or you can create program object to launch RDP session.
+
+For example:
+  Path and file name: *
+  Parameters:         /c RDESKTOP.EXE -g75p -r disk:home=D:\home -r clipboard:PRIMARYCLIPBOARD -r sound -u WinUser -p ChangeMe 192.168.1.10
+  Working directory:  C:\Programs\rdesktop
+
+
+Usage: rdesktop.exe [options] server[:port]
+
+Options:
+   -u: user name
+   -d: domain
+   -s: shell / seamless application to start remotly
+   -c: working directory
+   -p: password (- to prompt)
+   -n: client hostname
+   -k: keyboard layout on server (en-us, de, sv, etc.)
+       OS/2: The switch has no effect.
+   -g: desktop geometry (WxH)
+   -f: full-screen mode
+       OS/2: Size of the local desktop or size of parent window if switch -X
+             specified.
+   -b: force bitmap updates
+   -L: local codepage
+   -A: path to SeamlessRDP shell, this enables SeamlessRDP mode
+   -B: use BackingStore of X-server (if available)
+       OS/2: Do not use micro presentation space for PM windows.
+   -e: disable encryption (French TS)
+   -E: disable encryption from client to server
+   -m: do not send motion events
+   -C: use private colour map
+   -D: hide window manager decorations
+   -K: keep window manager key bindings
+       OS/2: Show window's system menu on ALT, close window on ALT-F4.
+   -S: caption button size (single application mode)
+       OS/2: The switch has no effect.
+   -T: window title
+   -t: disable use of remote ctrl
+   -N: enable numlock syncronization
+       OS/2: enable numlock, caplock and scrolllock syncronization.
+   -X: embed into another window with a given id.
+   -a: connection colour depth
+   -z: enable rdp compression
+   -x: RDP5 experience (m[odem 28.8], b[roadband], l[an] or hex nr.)
+   -P: use persistent bitmap caching
+   -r: enable specified device redirection (this flag can be repeated)
+         '-r comport:COM1=/dev/ttyS0': enable serial redirection of /dev/ttyS0 to COM1
+             or      COM1=/dev/ttyS0,COM2=/dev/ttyS1
+             OS/2: COM2=com1: enable serial device redirection of local com1
+                   to COM2.
+         '-r disk:floppy=/mnt/floppy': enable redirection of /mnt/floppy to 'floppy' share
+             or   'floppy=/mnt/floppy,cdrom=/mnt/cdrom'
+         '-r clientname=<client name>': Set the client name displayed
+             for redirected disks
+         '-r lptport:LPT1=/dev/lp0': enable parallel redirection of /dev/lp0 to LPT1
+             or      LPT1=/dev/lp0,LPT2=/dev/lp1
+             OS/2: Not supported.
+         '-r printer:mydeskjet': enable printer redirection
+             or      mydeskjet="HP LaserJet IIIP" to enter server driver as well
+             OS/2: Not supported.
+         '-r sound:[local[:driver[:device]]|off|remote]': enable sound redirection
+                     remote would leave sound on server
+                     available drivers for 'local':
+                     DART:	OS/2 DART output driver
+             OS/2: Use environment variable RDP_AUDIO_SHARED=1 to initialize
+                   the device as shareable.
+         '-r clipboard:[off|PRIMARYCLIPBOARD|CLIPBOARD]': enable clipboard
+                      redirection.
+                      'PRIMARYCLIPBOARD' looks at both PRIMARY and CLIPBOARD
+                      when sending data to server.
+                      OS/2: Rdesktop will be informed whenever the local
+                            clipboard contents change. This mode mode allows
+                            you to use text and images.
+                      'CLIPBOARD' looks at only CLIPBOARD.
+                      OS/2: Text data only supported.
+   -0: attach to console
+   -4: use RDP version 4
+   -5: use RDP version 5 (default)
+
+
+Fullscreen and seamless modes can be toggled at any time using Ctrl-Alt-Enter.
+
+Switch -g can be used to set window position and size. For example:
+
+  -g75% or -g75p     Set window size 75% width and 75% height of local desktop.
+
+  -g800x600+100+50   Set size 800x600 and position: 100 pixels from the left
+                     side of local desktop and 50 pixels from the top of local
+                     desktop.
+
+  -g60p-150-50       Window size is 60%, 150 pixels from the bottom side and 50
+                     pixels from the right side of local desktop.
+
+
+
+Donations are most welcome!
+https://www.arcanoae.com/shop/os2-ports-and-applications-by-andrey-vasilkin/
+PayPal: digi@os2.snc.ru
+
+Andrey Vasilkin, 2016
+E-mail: digi@os2.snc.ru
+Jabber: digi@frs.snc.ru
